@@ -9,8 +9,8 @@ class Quiz(models.Model):
         ('hard', 'hard'),
     )
 
-
     title = models.CharField(max_length=150)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     topic = models.CharField(max_length=100)
     time_to_complete = models.PositiveIntegerField(help_text='duration of the quiz in minutes')
     required_score = models.PositiveIntegerField(help_text='required score to pass in %')
