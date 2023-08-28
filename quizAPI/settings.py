@@ -1,5 +1,5 @@
-
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -125,28 +125,41 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-################################
-# DJANGO REST FRAMEWORK CONFIG #
-################################
+
+# Django rest framework settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSIONS_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ),
+    ],
 
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
 REST_USE_JWT = True
 
+
+# Cors headers
+
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# Documentation with drf spectacular and swagger
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'DRF Quiz API',
+}
+
+
+# Simple JWT config
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATE': True,
+    'SIGNING_KEY': SECRET_KEY,
 }
 
 

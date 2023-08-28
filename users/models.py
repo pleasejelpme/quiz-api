@@ -9,4 +9,6 @@ class CompletedQuiz(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     score = models.PositiveIntegerField()
     
+    def __str__(self):
+        return f'user: {self.user.username} | quiz: {self.quiz} | score: {self.score}'
 

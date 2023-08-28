@@ -7,6 +7,7 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = '__all__'
 
+
 class QuestionSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(read_only=True, source='answer_set', many=True)
     class Meta: 

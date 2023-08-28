@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from users.models import CompletedQuiz
 
 
 class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -48,3 +49,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
+
+class CompletedQuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompletedQuiz
+        fields = '__all__'
+        extra_kwargs = {
+            'user': {'read_only': True}
+        }

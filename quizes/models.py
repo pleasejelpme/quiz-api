@@ -24,6 +24,7 @@ class Quiz(models.Model):
     def get_questions(self):
         return self.quiestion_set.all()
     
+    
 class Question(models.Model):
     question = models.CharField(max_length=255)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
