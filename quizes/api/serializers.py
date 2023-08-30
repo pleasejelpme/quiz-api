@@ -10,13 +10,16 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(read_only=True, source='answer_set', many=True)
-    class Meta: 
+
+    class Meta:
         model = Question
         fields = '__all__'
 
 
 class QuizDetailSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(read_only=True, source='question_set', many=True)
+    questions = QuestionSerializer(
+        read_only=True, source='question_set', many=True)
+    creator = serializers.CharField(read_only=True, source='creator.username')
 
     class Meta:
         model = Quiz
@@ -33,9 +36,8 @@ class QuizListSerializer(serializers.ModelSerializer):
             'creator': {'read_only': True}
         }
 
-
     def validate_required_score(self, value):
         if value <= 0 or value > 100:
-            raise serializers.ValidationError('Score percentage must be between 1 and 100')
+            raise serializers.ValidationError(
+                'Score percentage must be between 1 and 100')
         return value
-    
