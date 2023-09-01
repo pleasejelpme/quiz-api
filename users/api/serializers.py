@@ -18,17 +18,17 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        required=True, 
+        required=True,
         validators=[UniqueValidator(
             queryset=User.objects.all(),
             message='Username already in use, try another one'
-            )]
-        )
+        )]
+    )
     password = serializers.CharField(
-        write_only=True, 
+        write_only=True,
         required=True,
         validators=[validate_password]
-        )
+    )
     password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
@@ -41,15 +41,16 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['password'] != data['password2']:
-            raise serializers.ValidationError({'error':'Password arent the same'})
+            raise serializers.ValidationError(
+                {'error': 'Password arent the same'})
         return data
-    
+
     def create(self, validated_data):
         user = User.objects.create(username=validated_data['username'])
         user.set_password(validated_data['password'])
         user.save()
         return user
-    
+
 
 class CompletedQuizSerializer(serializers.ModelSerializer):
     class Meta:
