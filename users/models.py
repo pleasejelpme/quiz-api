@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Max
 from django.db.models.signals import post_save
 
 from quizes.models import Quiz
@@ -7,11 +8,16 @@ from quizes.models import Quiz
 
 class CompletedQuiz(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(
+        Quiz, on_delete=models.CASCADE)
     score = models.PositiveIntegerField()
 
     def __str__(self):
         return f'user: {self.user.username} | quiz: {self.quiz} | score: {self.score}'
+
+    class Meta:
+        verbose_name = 'Competed Quiz'
+        verbose_name_plural = 'Completed Quizes'
 
 
 def update_quiz_times_completed(sender, instance, *args, **kwargs):

@@ -4,6 +4,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
+from django.db.models import Max
 from django.contrib.auth.password_validation import validate_password
 from users.models import CompletedQuiz
 
@@ -52,6 +53,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+# Serializer used to handle creation of completed quizes
 class CompletedQuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompletedQuiz
@@ -59,3 +61,10 @@ class CompletedQuizSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'user': {'read_only': True}
         }
+
+
+# Serializer that returns the best scores of every quiz an user has completed
+class UserQuizCompletionsSerializer(serializers.Serializer):
+    quiz_id = serializers.IntegerField(source='quiz')
+    quiz_title = serializers.CharField(source='quiz__title')
+    best_score = serializers.IntegerField()
