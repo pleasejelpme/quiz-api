@@ -1,4 +1,5 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
@@ -18,6 +19,8 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    tokens = serializers.SerializerMethodField()
+
     username = serializers.CharField(
         required=True,
         validators=[UniqueValidator(
@@ -37,13 +40,24 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = [
             'username',
             'password',
-            'password2'
+            'password2',
+            'tokens'
         ]
 
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError(
                 {'error': 'Password arent the same'})
+        return data
+
+    def get_tokens(self, user):
+        tokens = RefreshToken.for_user(user)
+        refresh = str(tokens)
+        access = str(tokens.access_token)
+        data = {
+            'access': access,
+            'refresh': refresh
+        }
         return data
 
     def create(self, validated_data):
