@@ -25,7 +25,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(
             queryset=User.objects.all(),
-            message='Username already in use, try another one'
+            message='Username already in use. Try another one'
         )]
     )
     password = serializers.CharField(
@@ -47,7 +47,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError(
-                {'error': 'Password arent the same'})
+                {'password': 'Password arent the same'})
+
         return data
 
     def get_tokens(self, user):
