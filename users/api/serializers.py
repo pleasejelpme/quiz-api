@@ -68,6 +68,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    new_password2 = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+    def validate(self, data):
+        if data['new_password'] != data['new_password2']:
+            raise serializers.ValidationError({
+                'password': 'Password arent the same'
+            })
+
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError({
+                'password': 'This is your actual password!'
+            })
+
+        return data
+
+
 # Serializer used to handle creation of completed quizes
 class CompletedQuizSerializer(serializers.ModelSerializer):
     class Meta:
