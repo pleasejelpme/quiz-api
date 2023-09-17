@@ -68,7 +68,7 @@ class ListCreateComletedQuizAPIView(ListCreateAPIView):
         if not user.is_staff:
             return CompletedQuiz.objects.filter(user=user).values('quiz', 'quiz__title').annotate(best_score=Max('score'))
         else:
-            return CompletedQuiz.objects.all().values('quiz').annotate(best_score=Max('score'))
+            return CompletedQuiz.objects.all().values('quiz', 'quiz__title').annotate(best_score=Max('score'))
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
