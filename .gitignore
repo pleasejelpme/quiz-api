@@ -1,5 +1,7 @@
 .venv
+.env
 .vscode
+.dockerignore
 schema.yml
 db.sqlite3
 *__pycache__*

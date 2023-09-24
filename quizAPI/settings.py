@@ -1,20 +1,24 @@
 from pathlib import Path
 from datetime import timedelta
+import environ
+import os
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+SECRET_KEY = env('SECRET_KEY')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u_7nfi%tb(xnsozp$q*!0j1rfjrr#wxev846xsecvq(5nm=6%4'
+DEBUG = env('DEBUG')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DOCKERIZED = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '[::1]', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -37,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'drf_spectacular'
-     
+
 ]
 
 MIDDLEWARE = [
@@ -75,12 +79,25 @@ WSGI_APPLICATION = 'quizAPI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if not DOCKERIZED:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'db.sqlite3'
+        }
     }
-}
+
+if DOCKERIZED:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
+        }
+    }
 
 
 # Password validation
@@ -125,7 +142,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
 # Django rest framework settings
 
 REST_FRAMEWORK = {
@@ -161,8 +177,3 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATE': True,
     'SIGNING_KEY': SECRET_KEY,
 }
-
-
-
-
-
