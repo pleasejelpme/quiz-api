@@ -22,7 +22,7 @@ class Quiz(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.title} | {self.difficulty}'
+        return self.title
 
     def get_questions(self):
         return self.quiestion_set.all()

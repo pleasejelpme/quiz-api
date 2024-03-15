@@ -5,8 +5,10 @@ from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
-from django.db.models import Max
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
 from users.models import CompletedQuiz
 
 
@@ -68,6 +70,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+# After creating an account, the user can set an email to reset his password if needed.
+class SetUserEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(required=True)
+
+
 class ChangePasswordSerializer(serializers.Serializer):
     model = User
     old_password = serializers.CharField(required=True)
@@ -84,7 +92,7 @@ class ChangePasswordSerializer(serializers.Serializer):
                 'password': 'Password arent the same'
             })
 
-        if data['old_password'] == data['new_password']:
+        if data['old_password'] == data['new_password'] | data['old_password'] == data['new_password2']:
             raise serializers.ValidationError({
                 'password': 'This is your actual password!'
             })
@@ -93,13 +101,9 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 # Serializer used to handle creation of completed quizes
-class CompletedQuizSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CompletedQuiz
-        fields = '__all__'
-        extra_kwargs = {
-            'user': {'read_only': True}
-        }
+class CompletedQuizSerializer(serializers.Serializer):
+    quiz = serializers.IntegerField()
+    score = serializers.IntegerField()
 
 
 # Serializer that returns the best scores of every quiz an user has completed

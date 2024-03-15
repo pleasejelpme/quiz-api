@@ -16,8 +16,6 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = env('DEBUG')
 
-DOCKERIZED = False
-
 ALLOWED_HOSTS = ['localhost', '[::1]', '127.0.0.1', '0.0.0.0']
 
 
@@ -79,7 +77,7 @@ WSGI_APPLICATION = 'quizAPI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if not DOCKERIZED:
+if DEBUG == True:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -87,7 +85,7 @@ if not DOCKERIZED:
         }
     }
 
-if DOCKERIZED:
+if DEBUG == False:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -136,11 +134,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Email used for password reset
+
+DEFAULT_FROM_EMAIL = 'pleasejelpmedev@outlook.com'
 
 # Django rest framework settings
 
