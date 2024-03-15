@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.generics import CreateAPIView, ListCreateAPIView, UpdateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.response import Response
@@ -7,10 +7,11 @@ from django.contrib.auth.models import User
 from django.db.models import Max
 
 from users.models import CompletedQuiz
+from quizes.models import Quiz
 from .serializers import (UserTokenObtainPairSerializer,
                           RegisterSerializer,
                           ChangePasswordSerializer,
-                          CompletedQuizSerializer,
+                          AddCompletedQuizSerializer,
                           UserQuizCompletionsSerializer,
                           SetUserEmailSerializer)
 
@@ -91,12 +92,7 @@ class ChangePasswordAPIView(UpdateAPIView):
             # set the new password
             self.user.set_password(serializer.data.get('new_password'))
             self.user.save()
-            response = {
-                'status': status.HTTP_204_NO_CONTENT,
-                'message': 'Password updated successfully!',
-                'data': []
-            }
-            return Response(response)
+            return Response({'success': 'Password updated successfully!'}, status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -105,7 +101,7 @@ class ListCreateComletedQuizAPIView(GenericAPIView):
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
-            return CompletedQuizSerializer
+            return AddCompletedQuizSerializer
         if self.request.method == 'GET':
             return UserQuizCompletionsSerializer
 
@@ -113,24 +109,37 @@ class ListCreateComletedQuizAPIView(GenericAPIView):
         user = self.request.user
         if user.is_staff:
             completions = CompletedQuiz.objects.all().values(
-                'quiz', 'quiz__title').annotate(best_score=Max('max_score'))
+                'quiz',
+                'quiz__title',
+                'times_completed').annotate(best_score=Max('max_score'))
             return completions
 
         completions = CompletedQuiz.objects.filter(user=user).values(
-            'quiz', 'quiz__title').annotate(best_score=Max('max_score'))
+            'quiz',
+            'quiz__title',
+            'times_completed').annotate(best_score=Max('max_score'))
         return completions
 
     def get(self, request, *args, **kwargs):
-        completions = self.get_queryset()
-        return Response(completions)
+        serializer = UserQuizCompletionsSerializer
+        try:
+            completions = self.get_queryset()
+            completions = serializer(completions, many=True)
+            return Response(completions.data, status=status.HTTP_200_OK)
+        except:
+            return Response({'error': 'something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
-            try:
-                quiz_completion = CompletedQuiz.objects.get(
-                    quiz=serializer.data.get('quiz'))
+            quiz_completion = CompletedQuiz.objects.filter(
+                quiz=serializer.data.get('quiz')).first()
+
+            # If the user already completed this quiz, then we check if the new score is better than
+            # the max score, if it is then we update the max score, and finally we increment the total completions
+            # of this quiz by 1
+            if quiz_completion:
                 current_max_score = quiz_completion.max_score
 
                 if current_max_score < serializer.data.get('score'):
@@ -140,7 +149,16 @@ class ListCreateComletedQuizAPIView(GenericAPIView):
                 quiz_completion.times_completed += 1
                 quiz_completion.save()
                 return Response({'success': 'completion added'}, status=status.HTTP_204_NO_CONTENT)
-            except:
-                return Response({'error': 'Quiz not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # If there is no completions of this quiz then we proceed to create a new one
+            else:
+                new_completed_quiz = CompletedQuiz.objects.create(
+                    user=self.request.user,
+                    quiz=Quiz.objects.get(id=serializer.data.get('quiz')),
+                    max_score=serializer.data.get('score')
+                )
+                new_completed_quiz.save()
+                return Response({'success': 'completion added'}, status=status.HTTP_204_NO_CONTENT)
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

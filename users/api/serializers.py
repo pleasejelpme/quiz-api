@@ -101,7 +101,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 # Serializer used to handle creation of completed quizes
-class CompletedQuizSerializer(serializers.Serializer):
+class AddCompletedQuizSerializer(serializers.Serializer):
     quiz = serializers.IntegerField()
     score = serializers.IntegerField()
 
@@ -111,3 +111,4 @@ class UserQuizCompletionsSerializer(serializers.Serializer):
     quiz_id = serializers.IntegerField(source='quiz')
     quiz_title = serializers.CharField(source='quiz__title')
     best_score = serializers.IntegerField()
+    completions = serializers.IntegerField(source='times_completed')
