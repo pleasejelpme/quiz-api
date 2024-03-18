@@ -48,10 +48,20 @@ class SetRecoveryEmailAPIView(UpdateAPIView):
                 return Response({'error': 'wrong password!'}, status=status.HTTP_400_BAD_REQUEST)
 
             email = serializer.data.get('email')
+
+            if self.user.email == email:
+                return Response(
+                    {'error': 'this is your current email, try a new one'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             print(email)
             self.user.email = email
             self.user.save()
-            return Response({'success': 'Email added succesfully!'}, status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {
+                    'success': 'Email added succesfully!',
+                    'email': email
+                }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -65,14 +75,25 @@ class SetRecoveryEmailAPIView(UpdateAPIView):
                 return Response({'error': 'wrong password!'}, status=status.HTTP_400_BAD_REQUEST)
 
             email = serializer.data.get('email')
+
+            if self.user.email == email:
+                return Response(
+                    {'error': 'this is your current email, try a new one'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             self.user.email = email
             self.user.save()
-            return Response({'success': 'Email changed successfully!'}, status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {
+                    'success': 'Email changed successfully!',
+                    'email': email
+                }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ChangePasswordAPIView(UpdateAPIView):
+class ChangePasswordAPIView(GenericAPIView):
     serializer_class = ChangePasswordSerializer
     model = User
 
@@ -80,7 +101,7 @@ class ChangePasswordAPIView(UpdateAPIView):
         user = self.request.user
         return user
 
-    def update(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         self.user = self.get_object()
         serializer = self.get_serializer(data=request.data)
 
@@ -92,7 +113,7 @@ class ChangePasswordAPIView(UpdateAPIView):
             # set the new password
             self.user.set_password(serializer.data.get('new_password'))
             self.user.save()
-            return Response({'success': 'Password updated successfully!'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'success': 'Password updated successfully!'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

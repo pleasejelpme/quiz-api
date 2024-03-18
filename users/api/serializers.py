@@ -17,6 +17,7 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['username'] = user.username
+        token['email'] = user.email
         return token
 
 
@@ -92,9 +93,9 @@ class ChangePasswordSerializer(serializers.Serializer):
                 'password': 'Password arent the same'
             })
 
-        if data['old_password'] == data['new_password'] | data['old_password'] == data['new_password2']:
+        if data['old_password'] == data['new_password'] or data['old_password'] == data['new_password2']:
             raise serializers.ValidationError({
-                'password': 'This is your actual password!'
+                'password': 'Old and new password cannot be the same'
             })
 
         return data
