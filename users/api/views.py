@@ -69,7 +69,6 @@ class SetRecoveryEmailAPIView(UpdateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):
-        print(request.data)
         self.user = self.get_object()
         serializer = self.get_serializer(data=request.data)
 
