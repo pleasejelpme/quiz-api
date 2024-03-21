@@ -38,12 +38,10 @@ class SetRecoveryEmailAPIView(UpdateAPIView):
 
     def get_object(self):
         user = self.request.user
-        print(f'The logged user is: {user}')
         return user
 
     def update(self, request, *args, **kwargs):
         self.user = self.get_object()
-        print(self.user)
         serializer = self.get_serializer(data=request.data)
 
         if self.user.email:
@@ -60,7 +58,6 @@ class SetRecoveryEmailAPIView(UpdateAPIView):
                     {'error': 'this is your current email, try a new one'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            print(email)
             self.user.email = email
             self.user.save()
             return Response(
