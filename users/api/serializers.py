@@ -7,9 +7,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-
-from users.models import CompletedQuiz
 
 
 class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -77,6 +76,7 @@ class SetUserEmailSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
 
+# Serializer for in-app password change functionality
 class ChangePasswordSerializer(serializers.Serializer):
     model = User
     old_password = serializers.CharField(required=True)
@@ -101,7 +101,16 @@ class ChangePasswordSerializer(serializers.Serializer):
         return data
 
 
+# Serializer for password res via email
+class RecoverPasswordEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    class Meta:
+        fields = ('email')
+
 # Serializer used to handle creation of completed quizes
+
+
 class AddCompletedQuizSerializer(serializers.Serializer):
     quiz = serializers.IntegerField()
     score = serializers.IntegerField()

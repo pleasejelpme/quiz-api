@@ -1,6 +1,11 @@
 from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.db import models
-from django.db.models.signals import post_save
+
+from django_rest_passwordreset.signals import reset_password_token_created
 
 from quizes.models import Quiz
 
@@ -18,3 +23,34 @@ class CompletedQuiz(models.Model):
     class Meta:
         verbose_name = 'Competed Quiz'
         verbose_name_plural = 'Completed Quizes'
+
+
+# Listens when a recovery token is created and sends it via email
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    context = {
+        'current_user': reset_password_token.user,
+        'username': reset_password_token.user.username,
+        'email': reset_password_token.user.email,
+        'recovery_password_url': reset_password_token.key
+    }
+
+    email_html_message = render_to_string(
+        'user_recover_password.html', context)
+    email_plaintext_message = render_to_string(
+        'user_recover_password.txt', context)
+
+    msg = EmailMultiAlternatives(
+        # title
+        'Password reset for Quizzing',
+
+        # message
+        email_plaintext_message,
+
+        # from
+        'pleasejelpmedev@outlook.com',
+
+        # to
+        [reset_password_token.user.email]
+    )
+    msg.send()

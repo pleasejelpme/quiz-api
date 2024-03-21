@@ -1,10 +1,16 @@
+from base64 import urlsafe_b64encode
+
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.response import Response
+
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.db.models import Max
+from django.urls import reverse
+from django.utils.encoding import force_bytes
 
 from users.models import CompletedQuiz
 from quizes.models import Quiz

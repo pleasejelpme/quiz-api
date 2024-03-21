@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_rest_passwordreset',
     'corsheaders',
-    'drf_spectacular'
+    'drf_spectacular',
 
 ]
 
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'quizAPI.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -142,10 +143,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Email used for password reset
-
-DEFAULT_FROM_EMAIL = 'pleasejelpmedev@outlook.com'
-
+################################
 # Django rest framework settings
 
 REST_FRAMEWORK = {
@@ -160,11 +158,35 @@ REST_FRAMEWORK = {
 REST_USE_JWT = True
 
 
+##############################
+# Email config
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'b25992b80cab5b'
+EMAIL_HOST_PASSWORD = '08e787bd5e8136'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+
+
+##############################
+# Django_rest_passwordreset configuration
+
+DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
+    "CLASS": "django_rest_passwordreset.tokens.RandomNumberTokenGenerator",
+    "OPTIONS": {
+        "min_number": 000000,
+        "max_number": 999999
+    }
+}
+
+##############################
 # Cors headers
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 
+##############################
 # Documentation with drf spectacular and swagger
 
 SPECTACULAR_SETTINGS = {
@@ -172,6 +194,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 
+#############################
 # Simple JWT config
 
 SIMPLE_JWT = {
