@@ -1,20 +1,18 @@
 from pathlib import Path
 from datetime import timedelta
-import environ
+from dotenv import load_dotenv
+
 import os
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-SECRET_KEY = env('SECRET_KEY')
-
-DEBUG = env('DEBUG')
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ['localhost', '[::1]', '127.0.0.1', '0.0.0.0']
 
@@ -78,26 +76,13 @@ WSGI_APPLICATION = 'quizAPI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if DEBUG == True:
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite3'
         }
     }
-
-if DEBUG == False:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME'),
-            'USER': env('DB_USER'),
-            'PASSWORD': env('DB_PASSWORD'),
-            'HOST': env('DB_HOST'),
-            'PORT': env('DB_PORT'),
-        }
-    }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -161,11 +146,12 @@ REST_USE_JWT = True
 ##############################
 # Email config
 
+DEFAULT_FROM_MAIL = 'pleasejelpmedev@outlook.com'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = 'b25992b80cab5b'
-EMAIL_HOST_PASSWORD = '08e787bd5e8136'
-EMAIL_PORT = '2525'
+EMAIL_HOST_USER = os.getenv('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIL_PORT = '587'
 EMAIL_USE_TLS = True
 
 
