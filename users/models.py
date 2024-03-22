@@ -15,7 +15,7 @@ class CompletedQuiz(models.Model):
     quiz = models.ForeignKey(
         Quiz, on_delete=models.CASCADE)
     max_score = models.PositiveIntegerField()
-    times_completed = models.PositiveIntegerField(default=0)
+    times_completed = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f'@{self.user.username} | {self.quiz} | max score: {self.max_score} | times completed: {self.times_completed}'
