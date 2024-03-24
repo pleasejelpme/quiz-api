@@ -7,10 +7,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.db.models import Max
-from django.urls import reverse
-from django.utils.encoding import force_bytes
 
 from users.models import CompletedQuiz
 from quizes.models import Quiz
@@ -159,6 +156,8 @@ class ListCreateComletedQuizAPIView(GenericAPIView):
             quiz_completion = CompletedQuiz.objects.filter(
                 quiz=serializer.data.get('quiz')).first()
 
+            quiz = Quiz.objects.get(id=quiz_completion.quiz.id)
+
             # If the user already completed this quiz, then we check if the new score is better than
             # the max score, if it is then we update the max score, and finally we increment the total completions
             # of this quiz by 1
@@ -170,6 +169,9 @@ class ListCreateComletedQuizAPIView(GenericAPIView):
                     quiz_completion.save()
 
                 quiz_completion.times_completed += 1
+                quiz.times_completed += 1
+
+                quiz.save()
                 quiz_completion.save()
                 return Response({'success': 'completion added'}, status=status.HTTP_204_NO_CONTENT)
 
