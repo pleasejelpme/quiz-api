@@ -14,6 +14,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG')
 
+USING_MAILTRAP = False
+
 ALLOWED_HOSTS = ['localhost', '[::1]', '127.0.0.1', '0.0.0.0']
 
 
@@ -145,14 +147,18 @@ REST_USE_JWT = True
 
 ##############################
 # Email config
-
 DEFAULT_FROM_MAIL = 'pleasejelpmedev@outlook.com'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
-EMAIL_PORT = '587'
-EMAIL_USE_TLS = True
+
+if not USING_MAILTRAP:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+if USING_MAILTRAP:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+    EMAIL_HOST_USER = os.getenv('EMAIL_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+    EMAIL_PORT = '587'
+    EMAIL_USE_TLS = True
 
 
 ##############################

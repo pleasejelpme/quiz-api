@@ -35,8 +35,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         'recovery_password_url': reset_password_token.key
     }
 
-    email_html_message = render_to_string(
-        'user_recover_password.html', context)
     email_plaintext_message = render_to_string(
         'user_recover_password.txt', context)
 
