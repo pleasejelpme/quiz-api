@@ -1,6 +1,6 @@
 # Quizzing API
 
-Quizzing is a web application where users can test their knowledge with various quizes submites by the comunity.
+Quizzing is a web application where users can test their knowledge with various quizes submited by the comunity.
 
 
 ## 🛠️ Tecnologies utilizied
