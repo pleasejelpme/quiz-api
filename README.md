@@ -9,6 +9,7 @@ Quizzing is a web application where users can test their knowledge with various 
 - [SQLite database](https://www.sqlite.org)
 - [JSON Web Token](https://jwt.io)
 
+---
 
 ## ⭐ Features
 - Users can create their own quizes.
@@ -20,6 +21,7 @@ Quizzing is a web application where users can test their knowledge with various 
 - Password recovery with email functionality.
 - Users can change their password in-app
 
+---
 ## 📚 What did I learned
 This project helped me to learn Django rest framework and development of restfull API's. Also, I learned about JWT as a better way to manage users authentication.
 
